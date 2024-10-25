@@ -71,5 +71,79 @@ export const userLogin = async(req:Request,res:Response):Promise<any> => {
     }
 }
 
+//user profile 
 
 
+
+
+export const getUserProfile = async(req:Request,res:Response) => {
+
+    try{
+
+        const user = await prisma.user.findUnique({
+            where:{ id: req.user.id},
+            select:{
+                id:true,
+                username:true,  
+                name:true,
+                bio:true,
+                profileImage:true,  
+            }
+        
+         }
+         
+        )
+        if(!user){
+            res.status(404).json({message: 'User not found'});
+        }
+        res.status(200).json(user); 
+    } catch(e:any){
+        res.status(500).json({message: 'Server error'});    
+    }
+      
+}
+
+//updating user profile
+
+
+export const updateUserProfile = async(req:Request,res:Response) => {   
+                        const {name,bio,profileImage} = req.body;  
+
+                try{
+                        const user = await prisma.user.update({
+                            where:{id:req.user.id},
+                            data:{
+                                name,
+                                bio,
+                                profileImage
+                            },
+                        })
+                        res.status(200).json({
+                            message:"profile updated succcesfully"
+                        })
+                }catch(e){
+                    res.status(500).json({message: 'Server error'});    
+                }
+         }
+
+
+
+//deletiing user profile will be optional mostly 
+
+
+
+export const deleteProfile = async(req:Request,res:Response) =>{
+    try{
+    await prisma.user.delete({
+        where:{id:req.user.id},
+    });
+    res.status(200).json({
+        message:"Profile deleted Successfully"
+    })
+    }catch(e){
+        res.status(400).json({
+            e: "invalid error"
+        })
+    }
+
+}

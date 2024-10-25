@@ -131,19 +131,19 @@ export const updateUserProfile = async(req:Request,res:Response) => {
 //deletiing user profile will be optional mostly 
 
 
-
-export const deleteProfile = async(req:Request,res:Response) =>{
-    try{
-    await prisma.user.delete({
-        where:{id:req.user.id},
-    });
-    res.status(200).json({
-        message:"Profile deleted Successfully"
-    })
-    }catch(e){
+export const deleteProfile = async (req: Request, res: Response) => {
+    try {
+        console.log("User ID:", req.user.id); // Debugging log
+        await prisma.user.delete({
+            where: { id: req.user.id },
+        });
+        res.status(200).json({
+            message: "Profile deleted Successfully",
+        });
+    } catch (e) {
+        console.error("Delete error:", e); // Log the error for debugging
         res.status(400).json({
-            e: "invalid error"
-        })
+            error: "Invalid error", // Change to more descriptive error message
+        });
     }
-
-}
+};

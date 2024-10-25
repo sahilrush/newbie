@@ -1,9 +1,16 @@
 //         // Generate JWT token  
 
 import { Request, Response } from 'express';
+
+// Extend the Request interface to include the user property
+declare module 'express-serve-static-core' {
+    interface Request {
+        user?: any;
+    }
+}
 import jwt from 'jsonwebtoken';
 
-export const authenticateJWT = (req:Request, res:Response, next: () => void)=> {
+export const authenticateJWT = (req:Request, res:Response, next:any)=> {
     const token = req.header('Authorization')?.split(' ')[1];
 
     if (!token) {
@@ -22,6 +29,7 @@ export const authenticateJWT = (req:Request, res:Response, next: () => void)=> {
         next();
     });
 };
+
 
 
 

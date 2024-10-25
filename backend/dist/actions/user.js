@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userLogin = exports.createUser = void 0;
+exports.deleteProfile = exports.updateUserProfile = exports.getUserProfile = exports.userLogin = exports.createUser = void 0;
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
@@ -71,3 +71,66 @@ const userLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.userLogin = userLogin;
+//user profile 
+const getUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield prisma.user.findUnique({
+            where: { id: req.user.id },
+            select: {
+                id: true,
+                username: true,
+                name: true,
+                bio: true,
+                profileImage: true,
+            }
+        });
+        if (!user) {
+            res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(user);
+    }
+    catch (e) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+exports.getUserProfile = getUserProfile;
+//updating user profile
+const updateUserProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { name, bio, profileImage } = req.body;
+    try {
+        const user = yield prisma.user.update({
+            where: { id: req.user.id },
+            data: {
+                name,
+                bio,
+                profileImage
+            },
+        });
+        res.status(200).json({
+            message: "profile updated succcesfully"
+        });
+    }
+    catch (e) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+exports.updateUserProfile = updateUserProfile;
+//deletiing user profile will be optional mostly 
+const deleteProfile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        console.log("User ID:", req.user.id); // Debugging log
+        yield prisma.user.delete({
+            where: { id: req.user.id },
+        });
+        res.status(200).json({
+            message: "Profile deleted Successfully",
+        });
+    }
+    catch (e) {
+        console.error("Delete error:", e); // Log the error for debugging
+        res.status(400).json({
+            error: "Invalid error", // Change to more descriptive error message
+        });
+    }
+});
+exports.deleteProfile = deleteProfile;
